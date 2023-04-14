@@ -15,14 +15,15 @@ import java.io.IOException;
 import java.time.Duration;
 
 public class BrowserBase {
-    static ThreadLocal<WebDriver> driver = new ThreadLocal<WebDriver>();
+    static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
     static JavascriptExecutor js;
     @RegisterExtension
-    ScreenshotWatcher watcher = new ScreenshotWatcher((WebDriver) driver.get(), "target/surefire-reports");
+    ScreenshotWatcher watcher = new ScreenshotWatcher(driver.get(), "target/surefire-reports");
 
     @BeforeAll
     public static void setUp() {
         driver.set(BrowserFactory.buildBrowser());
+        System.out.println("driver set to: " + driver.get());
         js = (JavascriptExecutor) driver.get();
         driver.get().manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
         driver.get().manage().timeouts().scriptTimeout(Duration.ofSeconds(10));

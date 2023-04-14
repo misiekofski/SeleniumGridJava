@@ -17,56 +17,34 @@ public class BrowserFactory {
     private static URL gridAddress;
 
     public static enum browserType {
-        FIREFOX, CHROME, SAFARI, EDGE
+        FIREFOX, CHROME, EDGE
     }
 
-    public static final WebDriver buildBrowser() {
+    public static WebDriver buildBrowser() {
 
-        String browser = System.getProperty("browser", "").toLowerCase();
+        String browser = System.getProperty("browser", "chrome").toLowerCase();
         switch (browser) {
-
-            case "firefox":
-                browserObject = BrowserFactory.buildBrowser(browserType.FIREFOX);
-                break;
-
-            case "safari":
-                browserObject = BrowserFactory.buildBrowser(browserType.SAFARI);
-                break;
-
-            case "edge":
-                browserObject = BrowserFactory.buildBrowser(browserType.EDGE);
-                break;
-
-            default:
-                browserObject = BrowserFactory.buildBrowser(browserType.CHROME);
-                break;
+            case "firefox" -> browserObject = BrowserFactory.buildBrowser(browserType.FIREFOX);
+            case "edge" -> browserObject = BrowserFactory.buildBrowser(browserType.EDGE);
+            default -> browserObject = BrowserFactory.buildBrowser(browserType.CHROME);
         }
 
         return browserObject;
     }
 
-    public static final WebDriver buildBrowser(browserType name) {
+    public static WebDriver buildBrowser(browserType name) {
         MutableCapabilities options = null;
-        String gridProperty = System.getProperty("grid", "");
+        String gridProperty = System.getProperty("grid", "http://localhost:4444");
         try {
             gridAddress = new URL(gridProperty);
         } catch (MalformedURLException e) {
         }
 
-        switch (name) {
-            case CHROME:
-                options = new ChromeOptions().addArguments("--remote-allow-origins=*");
-                break;
-            case FIREFOX:
-                options = new FirefoxOptions();
-                break;
-            case SAFARI:
-                options = new SafariOptions();
-                break;
-            case EDGE:
-                options = new EdgeOptions();
-                break;
-        }
+        options = switch (name) {
+            case CHROME -> new ChromeOptions().addArguments("--remote-allow-origins=*");
+            case FIREFOX -> new FirefoxOptions();
+            case EDGE -> new EdgeOptions().addArguments("--remote-allow-origins=*");
+        };
 
         if (gridAddress != null) {
             browserObject = RemoteWebDriver.builder().oneOf(options).address(gridAddress).build();

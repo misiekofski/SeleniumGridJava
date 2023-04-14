@@ -55,7 +55,7 @@ public class BrowserFactory {
 
         switch (name) {
             case CHROME:
-                options = new ChromeOptions();
+                options = new ChromeOptions().addArguments("--remote-allow-origins=*");
                 break;
             case FIREFOX:
                 options = new FirefoxOptions();
